@@ -5,7 +5,8 @@ window.onload = function() {
   var coolerWiFi = document.getElementById('cooler');
   var seconds = document.getElementById('seconds');
   var setTimer = document.getElementById('setTimer');
-  var server = 'http://192.168.15.150'
+  var server = 'http://192.168.15.150';
+
   homeWiFi.disabled = true;
   setTimer.disabled = true;
   homeWiFi.addEventListener('click', function() {
@@ -55,17 +56,38 @@ window.onload = function() {
   		alert('I am not an idiot like you');
   	}
   	else{
-  	d = document;
-  	var f = d.createElement('form');
-  	f.action = server.concat('/specificArgs?secs=',seconds.value);
-  	f.method = 'post';
-    d.body.appendChild(f);
-    f.submit();
-    d.body.removeChild(f);
-    setTimer.disabled = true;
-    alert('Timer set for '.concat(seconds.value,' seconds.'));
-    seconds.value=''
-	}
-  });
+
+  		d = document;
+  		var f = d.createElement('form');
+  		f.action = server.concat('/specificArgs?secs=',seconds.value);
+  		f.method = 'post';
+    	d.body.appendChild(f);
+    	f.submit();
+    	d.body.removeChild(f);
+    	setTimer.disabled = true;
+    	var hrs = Math.floor(seconds.value/3600);
+    	var min = Math.floor((seconds.value-hrs*3600)/60);
+
+   		var hrs_phrase='';
+   		var min_phrase='';
+   		
+   		if(hrs==1){
+   			hrs_phrase='1 hour ';
+   		}
+   		if(min==1){
+   			min_phrase=' 1 minute ';
+   		}
+
+   		if(hrs>1){
+   			hrs_phrase=hrs.toString().concat(' hours ');
+   		}
+   		if(min>1){
+   			min_phrase=min.toString().concat(' minutes ');
+   		}
+
+    	alert('Timer set for '.concat(hrs_phrase,min_phrase));
+    	seconds.value='';
+		}
+  	});
 
   }
