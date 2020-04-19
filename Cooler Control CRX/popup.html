@@ -10,23 +10,29 @@
       font-family: "Arial", Helvetica, sans-serif;
     }
     #buttons{
-      align-items: vertical;
-      padding: 5px;
+      padding: 1px;
+      padding-bottom: 2px;
+      text-align: center;
     }
   </style>
   </head>
   <body>
     <div id="popup">
-      <h1>Cooler Control</h1>
-      <div id="buttons">
-        <button id="switchOn">ON</button>
-        <button id="switchOff">OFF</button>
-      </div>
-      <h1>Select WiFi network</h1>
+      <h1>Cooler Control</h1><hr>
+      <h4>Select WiFi network</h4>
       <div id="buttons">
         <button id="home">Home WIFI</button>
         <button id="cooler">Cooler WIFI</button>
-      </div>
-  </div>
+      </div><br><hr>
+      <h4>Switch</h4>
+      <div id="buttons">
+        <button id="switchOn">ON</button>
+        <button id="switchOff">OFF</button>
+      </div><br><hr>
+        <form>
+          <label for="seconds"><h4>Set the timer</h4></label>
+          <input type="text" id ="seconds" name="seconds" placeholder="Time in seconds...">
+        </form><br>
+        <button id="setTimer">Set Timer</button>
   </body>
 </html>
