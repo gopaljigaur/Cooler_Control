@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
   var firstTime = true;
   switchOnButton.disabled = true;
   switchOffButton.disabled = true;
-  coolerWiFi.disabled = true;
 
   homeWiFi.addEventListener('click', function() {
 
