@@ -3,10 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
   var switchOffButton = document.getElementById('switchOff');
   var homeWiFi = document.getElementById('home');
   var coolerWiFi = document.getElementById('cooler');
-  var server = 'http://192.168.4.1'
+  var server = 'http://192.168.15.150'
   var firstTime = true;
-  switchOnButton.disabled = true;
-  switchOffButton.disabled = true;
+  homeWiFi.disabled = true;
 
   homeWiFi.addEventListener('click', function() {
 
