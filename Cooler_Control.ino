@@ -104,7 +104,7 @@ void handleOFFRequest() {
 }
 
 void handleSetTimer() {
-  Serial.println("handleSpecificArgs() was called");
+  Serial.println("handleSetTimer() was called");
   no_need = 0;
   String message = "";
   String tme = server.arg("secs");
