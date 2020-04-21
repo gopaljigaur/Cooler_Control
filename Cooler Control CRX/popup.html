@@ -15,19 +15,45 @@
       padding-bottom: 2px;
       text-align: center;
     }
-    #textbox1{
-      float: left;
-      width: 10px;
+    #developer{
+    	text-align: center;
     }
-    #textbox2{
-      width: 10px;
-      float: center;
+    #heading-outer{
+    	float: left;
+    	width: 235px;
+    }
+    #heading{
+    	float: right;
+    }
+    #developer-button-outer{
+    	float:right;
+    	padding-top: 3px;
+    	width: 35px;
+    }
+    #developer-button{
+    	float:left;
+    }
+    #main{
+    	float: center;
     }
   </style>
   </head>
   <body>
     <div id="popup">
+    	<div id="heading-outer">
+    	<div id="heading">
       <h1>Cooler Control</h1>
+      
+       </div>
+   </div>
+   <div id="developer-button-outer">
+       <div id="developer-button">
+       	<br>
+       <button id="dev">D</button>
+       </div>
+   </div>
+       <div id="main">
+       	<br><br><br><br>
       <hr>
       <h4>Select WiFi network</h4>
       <div id="buttons">
@@ -44,14 +70,29 @@
       <br>
       <hr>
       <h4>Switch it On/Off later</h4>
-      <h5>Hours</h5>
-      <input type="text" id ="hours" name="hours" placeholder="Hours">
-      <h5>Minutes</h5>
-      <input type="text" id ="minutes" name="minutes" placeholder="Minutes">
-      <h5>Seconds</h5>
-      <input type="text" id ="seconds" name="seconds" placeholder="Seconds">
+      
+      		<h5>Hours</h5>
+      		<input type="text" id ="hours" name="hours" placeholder="Hours">
+      		<h5>Minutes</h5>
+      		<input type="text" id ="minutes" name="minutes" placeholder="Minutes">
+      		<h5>Seconds</h5>
+            <input type="text" id ="seconds" name="seconds" placeholder="Seconds">
+        
       <br>
       <br>
       <button id="setTimer">Set Timer</button>
+      <br>
+      <br>
+      <div id="developer">
+      	<hr>
+      	<h4>Developer Options</h4>
+      	<div id="buttons">
+      	<button id="restartN">Restart (Normal)</button>
+        <button id="restartC">Restart (Program)</button>
+    	</div>
+    	<br>
+		</div>
+
+	</div>
   </body>
 </html>

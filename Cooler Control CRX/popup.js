@@ -7,10 +7,60 @@ window.onload = function() {
   var minutes = document.getElementById('minutes');
   var seconds = document.getElementById('seconds');
   var setTimer = document.getElementById('setTimer');
+  var dev = document.getElementById('dev');
+  var developer = document.getElementById('developer');
+  var restartN = document.getElementById('restartN');
+  var restartC = document.getElementById('restartC');
   var server = 'http://192.168.15.150';
 
   homeWiFi.disabled = true;
   setTimer.disabled = true;
+  developer.style.display = "none";
+
+    restartN.addEventListener('click', function() {
+
+      d = document;
+      var f = d.createElement('form');
+      f.action = server.concat('/restart?boot=normal');
+      f.method = 'post';
+      d.body.appendChild(f);
+      f.submit();
+      d.body.removeChild(f);
+      alert("Restarting in normal mode");
+    });
+    restartC.addEventListener('click', function() {
+
+      d = document;
+      var f = d.createElement('form');
+      f.action = server.concat('/restart?boot=program');
+      f.method = 'post';
+      d.body.appendChild(f);
+      f.submit();
+      d.body.removeChild(f);
+      alert("Restarting in programming mode");
+    });
+    dev.addEventListener('click', function() {
+
+      if (developer.style.display === "none") {
+        developer.style.display = "block";
+      } 
+      else {
+      developer.style.display = "none";
+        }
+    });
+      switchOffButton.addEventListener('click', function() {
+
+      d = document;
+      var f = d.createElement('form');
+      f.action = server.concat('/off');
+      f.method = 'post';
+      d.body.appendChild(f);
+      f.submit();
+      d.body.removeChild(f);
+      switchOnButton.disabled = false;
+      switchOffButton.disabled = true;
+    });
+
   homeWiFi.addEventListener('click', function() {
 
       server = 'http://192.168.15.150';
@@ -54,6 +104,7 @@ window.onload = function() {
   		setTimer.disabled=false;
   });
   minutes.addEventListener('click',function(){
+
   		setTimer.disabled=false;
   });
   seconds.addEventListener('click',function(){
