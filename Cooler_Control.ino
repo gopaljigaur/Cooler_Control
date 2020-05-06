@@ -17,10 +17,12 @@ long rcv;
 bool ota_flag = false;
 uint16_t time_elapsed = 0;
 
-const char* ssid = "Cooler server";
-const char* pass = "Ljgad#94912";
-const char* ssid_loc = "JioFi_101EC45";
-const char* pass_loc = "6xqwoy3x4w";
+const String ssid_loc = "Cooler server";
+const String pass_loc = "Ljgad#94912";
+String ssid="";
+String pass="";
+//const char* ssid_loc = "JioFi_101EC45";
+//const char* pass_loc = "6xqwoy3x4w";
 
 HTTPClient http;
 ESP8266WebServer server(80);
@@ -33,6 +35,11 @@ void handleSetTimer();
 void writeFile(long);
 long readFile();
 void cancel();
+void changeWIFI();
+void beginScan();
+String readHotspot();
+String readPassword();
+void getNetworkStatus();
 
 void setup() {
 Serial.begin(115200);
@@ -40,6 +47,13 @@ Serial.begin(115200);
   //Set pin state to value from previous session
   pinMode(rel, OUTPUT);
   rcv = readFile();
+  String ssid = readHotspot();
+  String pass = readPassword();
+  Serial.print("Saved hotspot name : ");
+  Serial.println(ssid);
+  Serial.print("Saved hotspot password : ");
+  Serial.println(pass);
+  
   Serial.print("Status from last session : ");
   Serial.println(stat);
   if (stat==0)
@@ -61,13 +75,14 @@ Serial.begin(115200);
     }
   }
   f1.close();
+  //---------------------------------------------ota code do not touch-------------------------------------------------------------
   if(ota_flag){
     WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid_loc, pass_loc);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("Connection Failed! Rebooting...");
-    delay(5000);
-    ESP.restart();
+    WiFi.begin(ssid, pass);
+    while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+      Serial.println("Connection Failed! Rebooting...");
+      delay(5000);
+      ESP.restart();
   }
 
   // Port defaults to 8266
@@ -83,48 +98,49 @@ Serial.begin(115200);
   // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
   // ArduinoOTA.setPasswordHash("21232f297a57a5a743894a0e4a801fc3");
 
-  ArduinoOTA.onStart([]() {
-    String type;
-    if (ArduinoOTA.getCommand() == U_FLASH) {
-      type = "sketch";
-    } else { // U_FS
-      type = "filesystem";
-    }
+    ArduinoOTA.onStart([]() {
+      String type;
+      if (ArduinoOTA.getCommand() == U_FLASH) {
+        type = "sketch";
+      } else { // U_FS
+          type = "filesystem";
+      }
 
     // NOTE: if updating FS this would be the place to unmount FS using FS.end()
-    Serial.println("Start updating " + type);
-  });
-  ArduinoOTA.onEnd([]() {
-    Serial.println("\nEnd");
-  });
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-  });
-  ArduinoOTA.onError([](ota_error_t error) {
-    Serial.printf("Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR) {
-      Serial.println("Auth Failed");
-    } else if (error == OTA_BEGIN_ERROR) {
-      Serial.println("Begin Failed");
-    } else if (error == OTA_CONNECT_ERROR) {
-      Serial.println("Connect Failed");
-    } else if (error == OTA_RECEIVE_ERROR) {
-      Serial.println("Receive Failed");
-    } else if (error == OTA_END_ERROR) {
-      Serial.println("End Failed");
+      Serial.println("Start updating " + type);
+    });
+    ArduinoOTA.onEnd([]() {
+      Serial.println("\nEnd");
+    });
+    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+      Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+    });
+    ArduinoOTA.onError([](ota_error_t error) {
+      Serial.printf("Error[%u]: ", error);
+      if (error == OTA_AUTH_ERROR) {
+        Serial.println("Auth Failed");
+      } else if (error == OTA_BEGIN_ERROR) {
+        Serial.println("Begin Failed");
+      } else if (error == OTA_CONNECT_ERROR) {
+        Serial.println("Connect Failed");
+      } else if (error == OTA_RECEIVE_ERROR) {
+        Serial.println("Receive Failed");
+      } else if (error == OTA_END_ERROR) {
+        Serial.println("End Failed");
+      }
+    });
+    ArduinoOTA.begin();
+    Serial.println("Ready");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
     }
-  });
-  ArduinoOTA.begin();
-  Serial.println("Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-  }
+    //----------------------------------------end of ota code-----------------------------------------
   else{
   //Start WIFI
   Serial.println('\n');
   WiFi.mode(WIFI_AP_STA);
-  WiFi.softAP(ssid, pass);
-  WiFi.begin(ssid_loc, pass_loc);
+  WiFi.softAP(ssid_loc, pass_loc);
+  WiFi.begin(ssid, pass);
   Serial.println("Connecting ...");
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println('\n');
@@ -149,7 +165,10 @@ Serial.begin(115200);
   server.on("/cancel", cancel);
   server.on("/status", sendStatus);
   server.on("/restart", restartModule);
-
+  server.on("/changeWIFI", changeWIFI);
+  server.on("/beginScan", beginScan);
+  server.on("/networkStatus",getNetworkStatus);
+  
   server.begin();
   Serial.println("HTTP server started on port 80");
   //Set timer if time left from previous session was>0
@@ -184,9 +203,7 @@ void loop() {
     Serial.println("OTA Timeout, reverting to normal mode...");
     ESP.restart();
   }
-  
   server.handleClient();
-    
 }
 
 void restartModule(){
@@ -332,4 +349,76 @@ void handleTimer(long secs) {
     else
       handleONRequest();
   }
+}
+
+String readHotspot(){
+  String wifi_ssid="";
+  File f = SPIFFS.open("/wifi_ssid.txt", "r");
+  while (f.available()) {
+    wifi_ssid = f.readString();
+  }
+  f.close();
+  return(wifi_ssid);
+}
+
+String readPassword(){
+  String wifi_pass="";
+  File f = SPIFFS.open("/wifi_pass.txt", "r");
+  while (f.available()) {
+    wifi_pass = f.readString();
+  }
+  f.close();
+  return(wifi_pass);
+}
+
+void changeWIFI(){
+  server.send(200,"text/HTML","Attempting to switch hotspot, please wait. Server will restart.");
+  String new_ssid = server.arg("ssid");
+  String new_pass = server.arg("pass");
+  
+  WiFi.softAPdisconnect();
+  WiFi.disconnect();
+  WiFi.mode(WIFI_STA);
+  delay(200);
+  WiFi.begin(new_ssid, new_pass);
+  if(WiFi.waitForConnectResult() != WL_CONNECTED){
+    Serial.println("Connection Failed! Reverting to previous WIFI settings...");
+    WiFi.disconnect();
+    }
+  else{
+    File fw_s = SPIFFS.open("/wifi_ssid.txt", "w");
+    if (!fw_s) {
+      Serial.println("Unable to open File");
+    }
+    fw_s.print(new_ssid);
+    fw_s.close();
+    File fw_p = SPIFFS.open("/wifi_pass.txt", "w");
+    if (!fw_p) {
+      Serial.println("Unable to open File");
+    }
+    fw_p.print(new_pass);
+    fw_p.close();
+    
+    }
+    ESP.restart();
+}
+void beginScan(){
+  int networksFound = WiFi.scanNetworks();
+  String wlist=String(networksFound)+" ";
+  
+  Serial.printf("%d network(s) found\n", networksFound);
+  for (int i = 0; i < networksFound; i++)
+  {
+    wlist=wlist+WiFi.SSID(i)+","+String(WiFi.RSSI(i))+",";
+    Serial.printf("%d: %s, Ch:%d (%ddBm) %s\n", i + 1, WiFi.SSID(i).c_str(), WiFi.channel(i), WiFi.RSSI(i), WiFi.encryptionType(i) == ENC_TYPE_NONE ? "open" : "");
+  }
+
+  server.send(200,"text/html",wlist);
+}
+
+void getNetworkStatus(){
+  if(WiFi.status()==WL_CONNECTED)
+    server.send(200,"text/html","SSID: "+ssid+", IP: "+WiFi.localIP().toString());
+  else
+    server.send(200,"text/html","SSID: "+ssid_loc+", IP: "+WiFi.softAPIP().toString());
 }
