@@ -3,96 +3,229 @@
   <head>
     <title>Cooler Controller</title>
     <iframe id="iframe" sandbox="allow-same-origin" style="display: none"></iframe>
-    <script src="popup.js"></script>
+    
     <style>
+    	@font-face {
+	font-family: "Product-Sans";
+	src: url("ProductSans-Regular.ttf");
+}
+
+@keyframes slideIn {
+  from {
+    top: -100%
+  }
+  to {
+    top: 0%
+  }
+}
     #popup{
       width:300px;
       text-align:center;
-      font-family: "Arial", Helvetica, sans-serif;
     }
     #buttons{
       padding: 1px;
       padding-bottom: 2px;
       text-align: center;
+
     }
     #developer{
     	text-align: center;
+    	display: none;
+
+    }
+    #developer.available{
+    	display: block;
     }
     #heading-outer{
     	float: left;
-    	width: 235px;
-    }
-    #heading{
-    	float: right;
-    }
-    #developer-button-outer{
-    	float:right;
-    	padding-top: 3px;
-    	width: 35px;
+    	margin-left: 70px;
+    	margin-right: 30px;
     }
     #developer-button{
-    	float:left;
+    	float: left;
+    	width: 35px;
+    	margin-top: 7px;
     }
     #main{
     	float: center;
     }
+    #dev{
+    	background-color: gray;
+    	border: none;
+    	outline: none;
+    	border-radius: 2px;
+    	height: 20px;
+    	color: black;
+    	transition: color, background-color ease-in 0.3s;
+    	cursor: pointer;
+    }
+    #dev:hover{
+    	background-color: red;
+    	color: white;
+    }
+    #cooler, #home{
+    	background-color: rgb(70,70,70);
+    	color: rgb(30,30,30);
+    	height: 30px;
+    	border-radius: 2px;
+    	border: none;
+    	width: 100px;
+    }
+    #setTimer{
+    	background-color: rgb(70,70,70);
+    	color: rgb(30,30,30);
+    	height: 30px;
+    	border-radius: 2px;
+    	border: none;
+    	width: 80px;
+    	transition: color, background-color ease-in 0.2s;
+    }
+    #cooler.available, #home.available{
+    	background-color: gray;
+    	border: none;
+    	height: 30px;
+    	border-radius: 2px;
+    	color: black;
+    	transition: color, background-color ease-in 0.2s;
+    	width: 100px;
+    	cursor: pointer;
+    }
+    #setTimer.available{
+    	background-color: gray;
+    	border: none;
+    	height: 30px;
+    	border-radius: 2px;
+    	color: black;
+    	transition: color, background-color ease-in 0.2s;
+    	width: 80px;
+    	cursor: pointer;
+    }
+    #cooler.available:hover , #home.available:hover{
+    	background-color: rgb(100,100,100);
+    	color: white;
+    }
+    #setTimer.available:hover{
+    	background-color: rgb(100,100,100);
+    	color: white;
+    }
+    #switchOn, #switchOff{
+    	background-color: rgb(70,70,70);
+    	color: rgb(30,30,30);
+    	height: 30px;
+    	border-radius: 2px;
+    	border: none;
+    	width: 50px;
+    }
+    #switchOn.available, #switchOff.available{
+    	background-color: gray;
+    	border: none;
+    	height: 30px;
+    	border-radius: 2px;
+    	color: black;
+    	width: 50px;
+    	transition: color, background-color ease-in 0.2s;
+    	cursor: pointer;
+    }
+
+    #switchOn.available:hover{
+    	background-color: rgb(100,200,150);
+    	color: white;
+    }
+    #switchOff.available:hover{
+    	background-color: rgb(200,100,100);
+    	color: white;
+    }
+    hr{
+    	width: 250px;
+    	height: 4px;
+    	border-radius: 20px;
+    	background-color: rgb(80,80,80);
+    	border: none;
+    	outline: none;
+    	margin-top: 10px;
+    	margin-bottom: 10px;
+    }
+    #restartN.available, #restartC.available{
+    	background-color: gray;
+    	border: none;
+    	height: 40px;
+    	border-radius: 2px;
+    	color: black;
+    	width: 100px;
+    	transition: color, background-color ease-in 0.2s;
+    	cursor: pointer;
+    	margin-bottom: 13px;
+    }
+    #restartN.available:hover , #restartC.available:hover{
+    	background-color: rgb(100,100,100);
+    	color: white;
+    }
+    ::placeholder {
+  color: rgb(30,30,30);
+  padding-left: 14px;
+  opacity: 1;
+	}
+	input:focus::-webkit-input-placeholder {
+	opacity: 0;
+	}
   </style>
   </head>
-  <body>
+  <body style="background-color: #303030;">
     <div id="popup">
     	<div id="heading-outer">
     	<div id="heading">
-      <h1>Cooler Control</h1>
+      <h1 style="color: white;">Cooler Control</h1>
       
        </div>
    </div>
-   <div id="developer-button-outer">
        <div id="developer-button">
-       	<br>
-       <button id="dev">D</button>
+       <button id="dev" title="Developer Mode">D</button>
        </div>
-   </div>
        <div id="main">
-       	<br><br><br><br>
+       	
       <hr>
-      <h4>Select WiFi network</h4>
+      <h3 style="color: white;">Select WiFi network</h3>
       <div id="buttons">
-        <button id="home">Home WIFI</button>
-        <button id="cooler">Cooler WIFI</button>
+        <button id="home" style="margin-right: 20px;margin-bottom: 13px;" title="Switch to Home WiFi">Home WIFI</button>
+        <button id="cooler" class="available" title="Switch to Cooler WiFi">Cooler WIFI</button>
       </div>
-      <br>
-      <hr>
-      <h4>Switch</h4>
-      <div id="buttons">
-        <button id="switchOn">ON</button>
-        <button id="switchOff">OFF</button>
-      </div>
-      <br>
-      <hr>
-      <h4>Switch it On/Off later</h4>
       
-      		<h5>Hours</h5>
-      		<input type="text" id ="hours" name="hours" placeholder="Hours">
-      		<h5>Minutes</h5>
-      		<input type="text" id ="minutes" name="minutes" placeholder="Minutes">
-      		<h5>Seconds</h5>
-            <input type="text" id ="seconds" name="seconds" placeholder="Seconds">
+      <hr>
+      <h3 style="color: white;">Switch</h3>
+      <div id="buttons">
+        <button id="switchOn" class = "available" style="margin-right: 20px;margin-bottom: 13px;">ON</button>
+        <button id="switchOff" class="available">OFF</button>
+      </div>
+      
+      <hr>
+      <h3 style="color: white;">Switch it On/Off later</h3>
+      	<div style="float: left;">
+      		<input type="number" autocomplete="anyrandomstring" id ="hours" name="hours" placeholder="HH" style="border-radius: 2px;height: 30px;width: 80px;margin-left: 12px;margin-right: 12px;border: none;font-size: 18px;text-align: center;background-color: gray;">
+      	</div>
+      	<div style="float: left;">
+      		<input type="number" autocomplete="anyrandomstring" id ="minutes" name="minutes" placeholder="MM" style="border-radius: 2px;height: 30px;width: 80px;margin-right: 12px;border: none;font-size: 18px;text-align: center;background-color: gray;">
+      	</div>
+      	<div style="float: left;">
+            <input type="number" autocomplete="anyrandomstring" id ="seconds" name="seconds" placeholder="SS" style="border-radius: 2px;height: 30px;width: 80px;border: none;font-size: 18px;text-align: center;background-color: gray;">
+        </div>
         
-      <br>
-      <br>
-      <button id="setTimer">Set Timer</button>
-      <br>
-      <br>
+      
+      
+      <button id="setTimer" style="margin-top: 25px;margin-bottom: 13px;">Set Timer</button>
+      
+      
       <div id="developer">
       	<hr>
-      	<h4>Developer Options</h4>
+      	<h3 style="color: white;">Developer Options</h3>
       	<div id="buttons">
-      	<button id="restartN">Restart (Normal)</button>
-        <button id="restartC">Restart (Program)</button>
+      	<button id="restartN" class="available" style="margin-right: 20px;">Restart (Normal)</button>
+        <button id="restartC" class="available">Restart (Program)</button>
     	</div>
-    	<br>
+    	
 		</div>
 
 	</div>
   </body>
+  <script src="popup.js">
+  </script>
 </html>
