@@ -32,7 +32,7 @@ function httpGetAsync(theUrl,callback)
           console.log(xmlHttp.responseText);
     }
     xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-     xmlHttp.setRequestHeader('Access-Control-Allow-Origin', '*');
+    xmlHttp.setRequestHeader('Access-Control-Allow-Origin', '*');
     xmlHttp.send(null);
 }
     restartN.addEventListener('click', function() {
