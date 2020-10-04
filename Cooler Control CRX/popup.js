@@ -15,50 +15,49 @@ window.onload = function() {
 
   homeWiFi.disabled = true;
   setTimer.disabled = true;
-  developer.style.display = "none";
 
+  //developer.style.display = "none";
+function getStatus(){
+  httpGetAsync(server,function(code){
+    alert(code);
+  });
+}
+function httpGetAsync(theUrl,callback)
+{
+    var xmlHttp = new XMLHttpRequest();
+
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+          console.log(xmlHttp.responseText);
+    }
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.setRequestHeader('Access-Control-Allow-Origin', '*');
+    xmlHttp.send(null);
+}
     restartN.addEventListener('click', function() {
-
-      d = document;
-      var f = d.createElement('form');
-      f.action = server.concat('/restart?boot=normal');
-      f.method = 'post';
-      d.body.appendChild(f);
-      f.submit();
-      d.body.removeChild(f);
+      httpGetAsync(server.concat('/restart?boot=normal'));
       alert("Restarting in normal mode");
     });
     restartC.addEventListener('click', function() {
-
-      d = document;
-      var f = d.createElement('form');
-      f.action = server.concat('/restart?boot=program');
-      f.method = 'post';
-      d.body.appendChild(f);
-      f.submit();
-      d.body.removeChild(f);
+      httpGetAsync(server.concat('/restart?boot=program'));
       alert("Restarting in programming mode");
     });
     dev.addEventListener('click', function() {
 
-      if (developer.style.display === "none") {
-        developer.style.display = "block";
+      if (developer.className === "available") {
+        developer.className = "";
       } 
       else {
-      developer.style.display = "none";
+      developer.className = "available";
         }
     });
       switchOffButton.addEventListener('click', function() {
-
-      d = document;
-      var f = d.createElement('form');
-      f.action = server.concat('/off');
-      f.method = 'post';
-      d.body.appendChild(f);
-      f.submit();
-      d.body.removeChild(f);
+        httpGetAsync(server.concat('/off'));
       switchOnButton.disabled = false;
+      switchOnButton.className = "available";
       switchOffButton.disabled = true;
+      switchOffButton.className = "";
     });
 
   homeWiFi.addEventListener('click', function() {
@@ -66,53 +65,68 @@ window.onload = function() {
       server = 'http://192.168.15.150';
       console.log(server.concat(' selected'));
       homeWiFi.disabled = true;
+      homeWiFi.className = "";
       coolerWiFi.disabled = false;
+      coolerWiFi.className = "available";
     });
   coolerWiFi.addEventListener('click', function() {
 
       server = 'http://192.168.4.1';
       console.log(server.concat(' selected'));
       homeWiFi.disabled = false;
+      homeWiFi.className = "available";
       coolerWiFi.disabled = true;
+      coolerWiFi.className = "";
     });
   switchOnButton.addEventListener('click', function() {
-
-      d = document;
-      var f = d.createElement('form');
-      f.action = server.concat('/on');
-      f.method = 'post';
-      d.body.appendChild(f);
-      f.submit();
-      d.body.removeChild(f);
+    httpGetAsync(server.concat('/on'));
       switchOnButton.disabled = true;
+      switchOnButton.className = "";
       switchOffButton.disabled = false;
-
+      switchOffButton.className = "available";
+      getStatus();
     });
-  switchOffButton.addEventListener('click', function() {
 
-      d = document;
-      var f = d.createElement('form');
-      f.action = server.concat('/off');
-      f.method = 'post';
-      d.body.appendChild(f);
-      f.submit();
-      d.body.removeChild(f);
-      switchOnButton.disabled = false;
-      switchOffButton.disabled = true;
-    });
-  hours.addEventListener('click',function(){
-  		setTimer.disabled=false;
+  hours.addEventListener('keyup',function(){
+    if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0'))
+  		{
+        setTimer.disabled=true;
+      setTimer.className = "";
+    }
+    else{
+        setTimer.disabled=false;
+      setTimer.className = "available";
+    }
   });
-  minutes.addEventListener('click',function(){
-
-  		setTimer.disabled=false;
+  minutes.addEventListener('keyup',function(){
+if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0'))
+      {
+        setTimer.disabled=true;
+      setTimer.className = "";
+    }
+    else{
+        
+      setTimer.disabled=false;
+      setTimer.className = "available";
+    }
   });
-  seconds.addEventListener('click',function(){
-  		setTimer.disabled=false;
+  seconds.addEventListener('keyup',function(){
+  		if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0'))
+      {
+         setTimer.disabled=true;
+      setTimer.className = "";
+    }
+    else{
+       
+      setTimer.disabled=false;
+      setTimer.className = "available";
+    }
   });
   setTimer.addEventListener('click',function(){
   	if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0')){
-  		alert('I am not an idiot like you');
+  		setTimer.className = "";
+      setTimer.disabled = true;
+      //alert('I am not an idiot like you');
   	}
   	else{
   		var c = 3;
@@ -129,13 +143,7 @@ window.onload = function() {
   			c=c-1;
   		}
   		var value_to_send = hours.value*3600 + minutes.value*60 +seconds.value;
-  		d = document;
-  		var f = d.createElement('form');
-  		f.action = server.concat('/specificArgs?secs=',value_to_send);
-  		f.method = 'post';
-    	d.body.appendChild(f);
-    	f.submit();
-    	d.body.removeChild(f);
+      httpGetAsync(server.concat('/specificArgs?secs=',value_to_send));
     	setTimer.disabled = true;
     	hrs_phrase='';
     	min_phrase='';
