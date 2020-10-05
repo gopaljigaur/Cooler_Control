@@ -2,14 +2,15 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
-#include <WiFiClient.h>
+#include <WiFiClientSecure.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 #include <FS.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
-#define rel 2
+#define rel 0
+#define leed 2
 
 int wlan_on = 1;
 int stat = 1;
@@ -18,19 +19,20 @@ long rcv;
 bool ota_flag = false;
 unsigned long time_elapsed = 0;
 unsigned long last_print = 0;
+unsigned long last_print2 = 0;
 
 const String ssid_loc = "Cooler server";
 const String pass_loc = "Ljgad#94912";
-String ssid="";
-String pass="";
+const char *host = "https://gopalji.ml/.netlify/functions/alternate";
 
-HTTPClient http;
 ESP8266WebServer server(80);
 ESP8266WiFiMulti wifiMulti;
 // Set your Static IP address
 IPAddress local_IP(192, 168, 43, 246);
 IPAddress gateway(192, 168, 43, 1);
 IPAddress subnet(255, 255, 255, 0);
+IPAddress primaryDNS(8, 8, 8, 8);
+IPAddress secondaryDNS(8, 8, 4, 4);
 
 void handleRoot();
 void handleONRequest();
@@ -48,22 +50,21 @@ void getNetworkStatus();
 void setup() {
 Serial.begin(115200);
   SPIFFS.begin();
-  //Set pin state to value from previous session
   pinMode(rel, OUTPUT);
+  pinMode(leed, OUTPUT);
   rcv = readFile();
   //Start WIFI
   Serial.println('\n');
-  if (!WiFi.config(local_IP, gateway, subnet)) {
+  if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
     Serial.println("STA Failed to configure");
   }
   WiFi.mode(WIFI_AP_STA);
   addHotspots();
  
-  //Serial.println("Connecting ...");  
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println('\n');
     Serial.print("Connected to ");
-    Serial.println(WiFi.SSID());               // Tell us what network we're connected to
+    Serial.println(WiFi.SSID());
     Serial.print("IP address:\t");
     Serial.println(WiFi.localIP());
   }
@@ -78,10 +79,14 @@ Serial.begin(115200);
 
   Serial.print("Status from last session : ");
   Serial.println(stat);
-  if (stat==0)
+  if (stat==0){
     digitalWrite(rel, LOW);
-  else
+    digitalWrite(leed, HIGH);
+  }
+  else{
     digitalWrite(rel,HIGH);
+    digitalWrite(leed, LOW);
+  }
 
   //check for program mode
   File f1 = SPIFFS.open("/boot.txt", "r");
@@ -170,7 +175,7 @@ Serial.begin(115200);
 
 void loop() {
   if(ota_flag){
-    while(time_elapsed<30000)
+    while(time_elapsed<100000)
     {
       ArduinoOTA.handle();
       time_elapsed=millis();
@@ -209,9 +214,45 @@ void loop() {
     Serial.println();
     last_print = long(time_elapsed/1000);
   }
+    if(int(time_elapsed/1000)%900==0 && (long(time_elapsed/1000) - last_print2)>1){
+    if(wifiMulti.run()==WL_CONNECTED){
+      if(stat==1){  //ON
+        digitalWrite(leed,HIGH); 
+      }
+      else{
+        digitalWrite(leed,LOW);
+      }
+      std::unique_ptr<WiFiClientSecure>client(new WiFiClientSecure);
+      client->setInsecure();
+      HTTPClient https;
+      String payload = WiFi.SSID();
+      if(https.begin(*client, host)){
+        https.addHeader("Content-Type", "text/plain");
+        Serial.println("Connecting to gopalji.ml");
+        int httpCode = https.POST(payload);
+        if(httpCode>0){
+          Serial.println("Request Succeeded");
+        }else{
+          Serial.println("Request Failed");
+        }
+        Serial.print("Code : ");
+        Serial.println(httpCode);
+        https.end();
+        }else{
+          Serial.println("Unable to Connect to gopalji.ml");
+        }
+      if(stat==1){  //ON
+        digitalWrite(leed,LOW); 
+      }
+      else{
+        digitalWrite(leed,HIGH);
+      }
+    }
+    Serial.println();
+    last_print2 = long(time_elapsed/1000);
+  }
   wifiMulti.run();
   server.handleClient();
-  delay(100);
 }
 
 void restartModule(){
@@ -236,7 +277,6 @@ void restartModule(){
 }
 
 void handleRoot() {
-  //TODO add buttons for different actions
   server.send(200, "text/html", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/><style>button{background-color:#e7e7e7;color:#000;border:none;padding:15px 32px;cursor:pointer;text-align:center;width:100%;font-size:16px;border-radius:5px;transition:background-color .2s ease-in}button:hover{background-color:#ccc;transition:background-color .2s ease-in}#form,form{display:inline-block;margin-left:10px;margin-right:10px;text-align:left;padding:20px}input[type=text]{margin-bottom:5px;line-height:3;border:solid 1px #000;border-radius:5px;outline:0;box-shadow:none;padding-left:10px;padding-right:10px;font-size:18px;transition:box-shadow .2s ease-in}input[type=text]:focus{box-shadow:0 0 1px 1px #000;transition:box-shadow .2s ease-in}</style><script>function httpGetAsync(e){var n=new XMLHttpRequest;n.open('GET',e,!0);n.send(null);}</script></head><body><h2>Server Up and Running</h2> <br><div style='text-align: center;'><div style='display: inline-block;'><div id='form'> <button onclick='httpGetAsync(\"/on\");'>On</button></div><div id='form'> <button onclick='httpGetAsync(\"/off\");'>Off</button></div><form action='/beginScan'> <button type='submit'>Begin Scan</button></form><form action='/setTimer'> <input type='text' name='secs' placeholder='Enter time in seconds'><br> <button type='submit'>Set Timer</button></form><form action='/cancelTimer'> <button type='submit'>Cancel Timer</button></form><form action='/getStatus'> <button type='submit'>Check Timer Status</button></form><form action='/restart'> <button type='submit' name='mode' value='normal'>Restart Normal</button></form><form action='/restart'> <button type='submit' name='mode' value='program'>Restart Program</button></form><form action='/beginScan'> <button type='submit'>Scan for Networks</button></form><form action='/networkStatus'> <button type='submit'>Check network status</button></form></div></div> <br></body></html>");
   Serial.println("handleRoot() was called");
 }
@@ -244,6 +284,7 @@ void handleRoot() {
 void handleONRequest() {
   server.send(200, "text/html", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/></head><body>The device is now ON</body></html>");
   digitalWrite(rel, HIGH);
+  digitalWrite(leed, LOW);
   Serial.println("handleONRequest() was called");
   stat = 1; no_need = 1; rcv = 0;
   writeFile(rcv);
@@ -252,6 +293,7 @@ void handleONRequest() {
 void handleOFFRequest() {
   server.send(200, "text/html", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/></head><body>The device is now OFF</body></html>");
   digitalWrite(rel, LOW);
+  digitalWrite(leed, HIGH);
   Serial.println("handleOFFRequest() was called");
   stat = 0; no_need = 1; rcv = 0;
   writeFile(rcv);
@@ -422,7 +464,6 @@ void changeWIFI(){
       Serial.println("Unable to open File");
     }
     serializeJson(doc,fw_s);
-    serializeJson(doc,Serial);
     fw_s.close();
     }
     ESP.restart();
