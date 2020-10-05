@@ -3,29 +3,20 @@ window.onload = function() {
   var switchOffButton = document.getElementById('switchOff');
   var homeWiFi = document.getElementById('home');
   var coolerWiFi = document.getElementById('cooler');
+  var otherWiFi = document.getElementById('other');
   var hours = document.getElementById('hours');
   var minutes = document.getElementById('minutes');
   var seconds = document.getElementById('seconds');
   var setTimer = document.getElementById('setTimer');
-  var dev = document.getElementById('dev');
-  var developer = document.getElementById('developer');
-  var restartN = document.getElementById('restartN');
-  var restartC = document.getElementById('restartC');
-  var server = 'http://192.168.15.150';
-
-  homeWiFi.disabled = true;
+  var lastseen = document.getElementById('lastseen');
+  var server = 'http://192.168.43.246';
+  var onlineserver = 'https://gopalji.ml/.netlify/functions/alternate';
+  otherWiFi.disabled = true;
   setTimer.disabled = true;
 
-  //developer.style.display = "none";
-function getStatus(){
-  httpGetAsync(server,function(code){
-    alert(code);
-  });
-}
 function httpGetAsync(theUrl,callback)
 {
     var xmlHttp = new XMLHttpRequest();
-
     xmlHttp.onreadystatechange = function() { 
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
             callback(xmlHttp.responseText);
@@ -35,23 +26,11 @@ function httpGetAsync(theUrl,callback)
     xmlHttp.setRequestHeader('Access-Control-Allow-Origin', '*');
     xmlHttp.send(null);
 }
-    restartN.addEventListener('click', function() {
-      httpGetAsync(server.concat('/restart?boot=normal'));
-      alert("Restarting in normal mode");
-    });
-    restartC.addEventListener('click', function() {
-      httpGetAsync(server.concat('/restart?boot=program'));
-      alert("Restarting in programming mode");
-    });
-    dev.addEventListener('click', function() {
 
-      if (developer.className === "available") {
-        developer.className = "";
-      } 
-      else {
-      developer.className = "available";
-        }
-    });
+httpGetAsync(onlineserver,function(e){
+	lastseen.innerHTML = e;
+  lastseen.style.display='inline-block';
+});
       switchOffButton.addEventListener('click', function() {
         httpGetAsync(server.concat('/off'));
       switchOnButton.disabled = false;
@@ -68,6 +47,9 @@ function httpGetAsync(theUrl,callback)
       homeWiFi.className = "";
       coolerWiFi.disabled = false;
       coolerWiFi.className = "available";
+      otherWiFi.disabled = false;
+      otherWiFi.className = "available";
+      
     });
   coolerWiFi.addEventListener('click', function() {
 
@@ -77,6 +59,19 @@ function httpGetAsync(theUrl,callback)
       homeWiFi.className = "available";
       coolerWiFi.disabled = true;
       coolerWiFi.className = "";
+      otherWiFi.disabled = false;
+      otherWiFi.className = "available";
+    });
+  otherWiFi.addEventListener('click', function() {
+
+      server = 'http://192.168.43.246';
+      console.log(server.concat(' selected'));
+      otherWiFi.disabled = true;
+      otherWiFi.className = "";
+      homeWiFi.disabled = false;
+      homeWiFi.className = "available";
+      coolerWiFi.disabled = false;
+      coolerWiFi.className = "available";
     });
   switchOnButton.addEventListener('click', function() {
     httpGetAsync(server.concat('/on'));
@@ -84,7 +79,6 @@ function httpGetAsync(theUrl,callback)
       switchOnButton.className = "";
       switchOffButton.disabled = false;
       switchOffButton.className = "available";
-      getStatus();
     });
 
   hours.addEventListener('keyup',function(){
@@ -126,7 +120,6 @@ if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&
   	if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0')){
   		setTimer.className = "";
       setTimer.disabled = true;
-      //alert('I am not an idiot like you');
   	}
   	else{
   		var c = 3;
@@ -143,7 +136,7 @@ if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&
   			c=c-1;
   		}
   		var value_to_send = hours.value*3600 + minutes.value*60 +seconds.value;
-      httpGetAsync(server.concat('/specificArgs?secs=',value_to_send));
+      httpGetAsync(server.concat('/setTimer?secs=',value_to_send));
     	setTimer.disabled = true;
     	hrs_phrase='';
     	min_phrase='';

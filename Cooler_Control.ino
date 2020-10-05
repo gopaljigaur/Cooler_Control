@@ -12,13 +12,13 @@
 
 #define rel 4
 #define leed 2
-int wlan_on = 1;
 int stat = 1;
 int no_need = 0;
 long rcv;
 unsigned long time_elapsed = 0;
 unsigned long last_print = 0;
 unsigned long last_print2 = 0;
+String current_netw = "";
 
 const String ssid_loc = "Cooler server";
 const String pass_loc = "Ljgad#94912";
@@ -46,6 +46,7 @@ void changeWIFI();
 void beginScan();
 void addHotspots();
 void getNetworkStatus();
+void sendtoserver();
 
 void setup() {
   Serial.begin(115200);
@@ -98,13 +99,17 @@ void setup() {
     Serial.println(rcv);
     handleTimer(rcv);
   }
-
 }
 
 void loop() {
   // serial print status update every 1 minute
   time_elapsed = millis();
-
+  if(wifiMulti.run()==WL_CONNECTED){
+  if(current_netw!=WiFi.SSID()){
+    current_netw=WiFi.SSID();
+    sendtoserver();
+  }
+  }
   if (int(time_elapsed / 1000) % 60 == 0 && (long(time_elapsed / 1000) - last_print) > 1) {
     if (WiFi.status() == WL_CONNECTED) {
       Serial.print(">> Connected to : ");
@@ -126,7 +131,19 @@ void loop() {
       digitalWrite(leed, LOW);
       delay(100);
       digitalWrite(leed, HIGH);
-      std::unique_ptr<WiFiClientSecure>client(new WiFiClientSecure);
+      sendtoserver();
+      //blink
+      digitalWrite(leed, LOW);
+      delay(100);
+      digitalWrite(leed, HIGH);
+    }
+    Serial.println();
+    last_print2 = long(time_elapsed / 1000);
+  }
+  server.handleClient();
+}
+void sendtoserver(){
+  std::unique_ptr<WiFiClientSecure>client(new WiFiClientSecure);
       client -> setInsecure();
       HTTPClient https;
       String payload = WiFi.SSID();
@@ -145,18 +162,7 @@ void loop() {
       } else {
         Serial.println("Unable to Connect to gopalji.ml");
       }
-      //blink
-      digitalWrite(leed, LOW);
-      delay(100);
-      digitalWrite(leed, HIGH);
-    }
-    Serial.println();
-    last_print2 = long(time_elapsed / 1000);
-  }
-  wifiMulti.run();
-  server.handleClient();
 }
-
 void restartModule() {
   server.send(200, "text/html", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/></head><body>Restarting...</body></html>");
   Serial.println("Rebooting...");
