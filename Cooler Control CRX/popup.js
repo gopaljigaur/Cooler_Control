@@ -26,17 +26,42 @@ function httpGetAsync(theUrl,callback)
     xmlHttp.setRequestHeader('Access-Control-Allow-Origin', '*');
     xmlHttp.send(null);
 }
-
+function whatsup(){
+httpGetAsync(server.concat('/status'),function(e){
+  var ison = parseInt(e.split(' ')[1])==1?true:false;
+  if(ison){
+    switchOnButton.disabled = true;
+    switchOnButton.className = "";
+    switchOffButton.disabled = false;
+    switchOffButton.className = "available";
+  }
+  else{
+    switchOnButton.disabled = false;
+    switchOnButton.className = "available";
+    switchOffButton.disabled = true;
+    switchOffButton.className = "";
+  }
+});
+}
+whatsup();
 httpGetAsync(onlineserver,function(e){
 	lastseen.innerHTML = e;
   lastseen.style.display='inline-block';
 });
+
       switchOffButton.addEventListener('click', function() {
         httpGetAsync(server.concat('/off'));
       switchOnButton.disabled = false;
       switchOnButton.className = "available";
       switchOffButton.disabled = true;
       switchOffButton.className = "";
+    });
+      switchOnButton.addEventListener('click', function() {
+    httpGetAsync(server.concat('/on'));
+      switchOnButton.disabled = true;
+      switchOnButton.className = "";
+      switchOffButton.disabled = false;
+      switchOffButton.className = "available";
     });
 
   homeWiFi.addEventListener('click', function() {
@@ -49,7 +74,7 @@ httpGetAsync(onlineserver,function(e){
       coolerWiFi.className = "available";
       otherWiFi.disabled = false;
       otherWiFi.className = "available";
-      
+      whatsup();
     });
   coolerWiFi.addEventListener('click', function() {
 
@@ -61,6 +86,7 @@ httpGetAsync(onlineserver,function(e){
       coolerWiFi.className = "";
       otherWiFi.disabled = false;
       otherWiFi.className = "available";
+      whatsup();
     });
   otherWiFi.addEventListener('click', function() {
 
@@ -72,13 +98,7 @@ httpGetAsync(onlineserver,function(e){
       homeWiFi.className = "available";
       coolerWiFi.disabled = false;
       coolerWiFi.className = "available";
-    });
-  switchOnButton.addEventListener('click', function() {
-    httpGetAsync(server.concat('/on'));
-      switchOnButton.disabled = true;
-      switchOnButton.className = "";
-      switchOffButton.disabled = false;
-      switchOffButton.className = "available";
+      whatsup();
     });
 
   hours.addEventListener('keyup',function(){
