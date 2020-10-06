@@ -124,14 +124,10 @@ void loop() {
     Serial.println();
     last_print = long(time_elapsed / 1000);
   }
-  if (int(time_elapsed / 1000) % 900 == 0 && (long(time_elapsed / 1000) - last_print2) > 1) {
+  if (int(time_elapsed / 1000) % 120 == 0 && (long(time_elapsed / 1000) - last_print2) > 1) {
     if (wifiMulti.run() == WL_CONNECTED) {
-      //blink
-      digitalWrite(leed, LOW);
-      delay(100);
-      digitalWrite(leed, HIGH);
       sendtoserver();
-      //blink
+            //blink
       digitalWrite(leed, LOW);
       delay(100);
       digitalWrite(leed, HIGH);
