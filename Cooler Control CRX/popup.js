@@ -66,7 +66,7 @@ httpGetAsync(onlineserver,function(e){
 
   homeWiFi.addEventListener('click', function() {
 
-      server = 'http://192.168.15.150';
+      server = 'http://192.168.15.246';
       console.log(server.concat(' selected'));
       homeWiFi.disabled = true;
       homeWiFi.className = "";
