@@ -9,7 +9,7 @@ window.onload = function() {
   var seconds = document.getElementById('seconds');
   var setTimer = document.getElementById('setTimer');
   var lastseen = document.getElementById('lastseen');
-  var server = 'http://192.168.43.246';
+  var server = '';
   var onlineserver = 'https://gopalji.ml/.netlify/functions/alternate';
   otherWiFi.disabled = true;
   setTimer.disabled = true;
@@ -26,6 +26,7 @@ function httpGetAsync(theUrl,callback)
     xmlHttp.setRequestHeader('Access-Control-Allow-Origin', '*');
     xmlHttp.send(null);
 }
+
 function whatsup(){
 httpGetAsync(server.concat('/status'),function(e){
   var ison = parseInt(e.split(' ')[1])==1?true:false;
@@ -43,21 +44,31 @@ httpGetAsync(server.concat('/status'),function(e){
   }
 });
 }
-whatsup();
+
+httpGetAsync('http://192.168.43.146/status',function(e){
+      	server = 'http://192.168.43.146';
+      	whatsup();
+      });
+
+httpGetAsync('http://192.168.43.246/status',function(e){
+      	server = 'http://192.168.43.246';
+      whatsup();
+  });
+
 httpGetAsync(onlineserver,function(e){
 	lastseen.innerHTML = e;
   lastseen.style.display='inline-block';
 });
 
       switchOffButton.addEventListener('click', function() {
-        httpGetAsync(server.concat('/off'));
+        httpGetAsync(server.concat('/off'),function(){});
       switchOnButton.disabled = false;
       switchOnButton.className = "available";
       switchOffButton.disabled = true;
       switchOffButton.className = "";
     });
       switchOnButton.addEventListener('click', function() {
-    httpGetAsync(server.concat('/on'));
+    httpGetAsync(server.concat('/on'),function(){});
       switchOnButton.disabled = true;
       switchOnButton.className = "";
       switchOffButton.disabled = false;
@@ -66,7 +77,7 @@ httpGetAsync(onlineserver,function(e){
 
   homeWiFi.addEventListener('click', function() {
 
-      server = 'http://192.168.15.246';
+      server = 'http://192.168.15.100';
       console.log(server.concat(' selected'));
       homeWiFi.disabled = true;
       homeWiFi.className = "";
@@ -90,7 +101,15 @@ httpGetAsync(onlineserver,function(e){
     });
   otherWiFi.addEventListener('click', function() {
 
-      server = 'http://192.168.43.246';
+      httpGetAsync('http://192.168.43.146/status',function(e){
+      	server = 'http://192.168.43.146';
+      	
+      });
+httpGetAsync('http://192.168.43.246/status',function(e){
+      	server = 'http://192.168.43.246';
+
+      });
+
       console.log(server.concat(' selected'));
       otherWiFi.disabled = true;
       otherWiFi.className = "";
@@ -137,6 +156,7 @@ if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&
     }
   });
   setTimer.addEventListener('click',function(){
+  	if(setTimer.innerHTML!="Cancel Timer"){
   	if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0')){
   		setTimer.className = "";
       setTimer.disabled = true;
@@ -156,8 +176,10 @@ if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&
   			c=c-1;
   		}
   		var value_to_send = hours.value*3600 + minutes.value*60 +seconds.value;
-      httpGetAsync(server.concat('/setTimer?secs=',value_to_send));
-    	setTimer.disabled = true;
+      httpGetAsync(server.concat('/setTimer?secs=',value_to_send),function(){});
+      //setTimer.className = "";
+    	//setTimer.disabled = true;
+    	setTimer.innerHTML = "Cancel Timer";
     	hrs_phrase='';
     	min_phrase='';
     	sec_phrase='';
@@ -200,6 +222,13 @@ if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&
     	minutes.value='';
     	seconds.value='';
 		}
+	}
+	else{
+		httpGetAsync(server.concat('/cancel'),function(){});
+		setTimer.innerHTML = "Set Timer";
+		setTimer.disabled = true;
+		setTimer.className = "";
+	}
   	});
 
   }

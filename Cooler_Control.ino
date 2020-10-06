@@ -6,7 +6,6 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 #include <FS.h>
-#include <WiFiUdp.h>
 #include <ESP8266HTTPUpdateServer.h>
 
 #define rel 4
@@ -26,12 +25,6 @@ const char * host = "https://gopalji.ml/.netlify/functions/alternate";
 ESP8266WebServer server(80);
 ESP8266HTTPUpdateServer httpUpdater;
 ESP8266WiFiMulti wifiMulti;
-// Set your Static IP address
-IPAddress local_IP(192, 168, 43, 246);
-IPAddress gateway(192, 168, 43, 1);
-IPAddress subnet(255, 255, 255, 0);
-IPAddress primaryDNS(8, 8, 8, 8);
-IPAddress secondaryDNS(8, 8, 4, 4);
 
 void handleRoot();
 void handleONRequest();
@@ -56,9 +49,7 @@ void setup() {
   rcv = readFile();
   //Start WIFI
   Serial.println('\n');
-  if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
-    Serial.println("STA Failed to configure");
-  }
+  
   WiFi.mode(WIFI_AP_STA);
   addHotspots();
 
@@ -92,7 +83,6 @@ void setup() {
   server.begin();
   Serial.println("HTTP server started on port 80");
   //Set timer if time left from previous session was>0
-
   if (rcv > 0) {
     Serial.print("Time left from previous session in secs : ");
     Serial.println(rcv);
@@ -109,7 +99,7 @@ void loop() {
     sendtoserver();
   }
   }
-  if (int(time_elapsed / 1000) % 60 == 0 && (long(time_elapsed / 1000) - last_print) > 1) {
+  if (long(time_elapsed / 1000) % 60 == 0 && (long(time_elapsed / 1000) - last_print) > 1) {
     if (WiFi.status() == WL_CONNECTED) {
       Serial.print(">> Connected to : ");
       Serial.println(WiFi.SSID());
@@ -124,7 +114,7 @@ void loop() {
     Serial.println();
     last_print = long(time_elapsed / 1000);
   }
-  if (int(time_elapsed / 1000) % 120 == 0 && (long(time_elapsed / 1000) - last_print2) > 1) {
+  if (long(time_elapsed / 1000) % 120 == 0 && (long(time_elapsed / 1000) - last_print2) > 1) {
     if (wifiMulti.run() == WL_CONNECTED) {
       sendtoserver();
             //blink
@@ -142,7 +132,7 @@ void sendtoserver(){
       client -> setInsecure();
       HTTPClient https;
       String payload = WiFi.SSID();
-      if (https.begin( * client, host)) {
+      if (https.begin( *client, host)) {
         https.addHeader("Content-Type", "text/plain");
         Serial.println("Connecting to gopalji.ml");
         int httpCode = https.POST(payload);
@@ -159,6 +149,8 @@ void sendtoserver(){
       }
 }
 void restartModule() {
+  server.sendHeader("Access-Control-Allow-Headers","*");
+  server.sendHeader("Access-Control-Allow-Origin","*");
   server.send(200, "text/html", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/></head><body>Restarting...</body></html>");
   Serial.println("Rebooting...");
   delay(1000);
@@ -166,11 +158,15 @@ void restartModule() {
 }
 
 void handleRoot() {
+  server.sendHeader("Access-Control-Allow-Headers","*");
+  server.sendHeader("Access-Control-Allow-Origin","*");
   server.send(200, "text/html", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/><style>button{background-color:#e7e7e7;color:#000;border:none;padding:15px 32px;cursor:pointer;text-align:center;width:100%;font-size:16px;border-radius:5px;transition:background-color .2s ease-in}button:hover{background-color:#ccc;transition:background-color .2s ease-in}#form,form{display:inline-block;margin-left:10px;margin-right:10px;text-align:left;padding:20px}input[type=text]{margin-bottom:5px;line-height:3;border:solid 1px #000;border-radius:5px;outline:0;box-shadow:none;padding-left:10px;padding-right:10px;font-size:18px;transition:box-shadow .2s ease-in}input[type=text]:focus{box-shadow:0 0 1px 1px #000;transition:box-shadow .2s ease-in}</style><script>function httpGetAsync(e){var n=new XMLHttpRequest;n.open('GET',e,!0);n.send(null);}</script></head><body><h2>Server Up and Running</h2> <br><div style='text-align: center;'><div style='display: inline-block;'><div id='form'> <button onclick='httpGetAsync(\"/on\");'>On</button></div><div id='form'> <button onclick='httpGetAsync(\"/off\");'>Off</button></div><form action='/beginScan'> <button type='submit'>Begin Scan</button></form><form action='/setTimer'> <input type='text' name='secs' placeholder='Enter time in seconds'><br> <button type='submit'>Set Timer</button></form><form action='/cancel'> <button type='submit'>Cancel Timer</button></form><form action='/status'> <button type='submit'>Check Timer Status</button></form><form action='/restart'> <button type='submit'>Restart Controller</button></form><form action='/beginScan'> <button type='submit'>Scan for Networks</button></form><form action='/networkStatus'> <button type='submit'>Check network status</button></form><form action='/update'> <button type='submit'>Update Firmware</button></form></div></div> <br></body></html>");
   Serial.println("handleRoot() was called");
 }
 
 void handleONRequest() {
+  server.sendHeader("Access-Control-Allow-Headers","*");
+  server.sendHeader("Access-Control-Allow-Origin","*");
   server.send(200, "text/html", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/></head><body>The device is now ON</body></html>");
   digitalWrite(rel, HIGH);
   Serial.println("handleONRequest() was called");
@@ -181,6 +177,8 @@ void handleONRequest() {
 }
 
 void handleOFFRequest() {
+  server.sendHeader("Access-Control-Allow-Headers","*");
+  server.sendHeader("Access-Control-Allow-Origin","*");
   server.send(200, "text/html", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/></head><body>The device is now OFF</body></html>");
   digitalWrite(rel, LOW);
   Serial.println("handleOFFRequest() was called");
@@ -202,6 +200,8 @@ void handleSetTimer() {
     message += tme;
   }
   message += "</body></html>";
+  server.sendHeader("Access-Control-Allow-Headers","*");
+  server.sendHeader("Access-Control-Allow-Origin","*");
   server.send(200, "text/html", message);
   long current_millis = millis();
   long time_left = (atol(tme.c_str()));
@@ -211,6 +211,8 @@ void handleSetTimer() {
 }
 
 void cancel() {
+  server.sendHeader("Access-Control-Allow-Headers","*");
+  server.sendHeader("Access-Control-Allow-Origin","*");
   server.send(200, "text/html", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/></head><body>Timer has been cancelled</body></html>");
   Serial.println("cancel() was called");
   no_need = 1;
@@ -220,6 +222,8 @@ void cancel() {
 
 void sendStatus() {
   String send_status = String(rcv) + " " + String(stat) + " ";
+  server.sendHeader("Access-Control-Allow-Headers","*");
+  server.sendHeader("Access-Control-Allow-Origin","*");
   server.send(200, "text/plain", send_status);
 }
 
@@ -270,8 +274,8 @@ void handleTimer(long secs) {
   long i = millis();
   millisec += 1000;
   while (millis() < millisec) {
-    server.handleClient();
-
+    //server.handleClient();
+    loop();
     if (no_need == 1)
       break;
     if (t == 10000) {
@@ -307,6 +311,8 @@ void addHotspots() {
 }
 
 void changeWIFI() {
+  server.sendHeader("Access-Control-Allow-Headers","*");
+  server.sendHeader("Access-Control-Allow-Origin","*");
   server.send(200, "text/HTML", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/></head><body>Adding new WiFi. Server will restart.</body></html>");
   String new_ssid = server.arg("ssid");
   String new_pass = server.arg("pass");
@@ -394,6 +400,8 @@ void beginScan() {
     Serial.printf("%d: %s, Ch:%d (%ddBm) %s\n", i + 1, WiFi.SSID(i).c_str(), WiFi.channel(i), WiFi.RSSI(i), WiFi.encryptionType(i) == ENC_TYPE_NONE ? "open" : "");
   }
   wlist = wlist + "</div></div><br><div id='forma'><div id='form' style='display:none;'><label for='ssid'>Network Name:</label><br><input type='text' id='ssid' name='ssid' value='' readonly/><br><label for='pass'>Password:</label><br><input type='password' id='pass' name='pass'/><br><br><button name='submit' onclick=\"httpGetAsync('/changeWIFI');\"/>Submit</button><br><br>Please close this page after clicking submit</div></div></body></html>";
+  server.sendHeader("Access-Control-Allow-Headers","*");
+  server.sendHeader("Access-Control-Allow-Origin","*");
   server.send(200, "text/html", wlist);
 }
 
@@ -406,6 +414,8 @@ void getNetworkStatus() {
   } else {
     Serial.println("ssid : " + ssid_loc);
     Serial.println("ip : " + WiFi.softAPIP().toString());
+    server.sendHeader("Access-Control-Allow-Headers","*");
+  server.sendHeader("Access-Control-Allow-Origin","*");
     server.send(200, "text/html", "<html lang='en'><head><meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/></head><body>SSID: " + ssid_loc + ", IP: " + WiFi.softAPIP().toString() + "</body></html>");
   }
 }
