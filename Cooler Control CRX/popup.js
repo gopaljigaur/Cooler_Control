@@ -10,8 +10,33 @@ window.onload = function() {
   var setTimer = document.getElementById('setTimer');
   var lastseen = document.getElementById('lastseen');
   var server = '';
+  var timlef=false;
   var onlineserver = 'https://gopalji.ml/.netlify/functions/alternate';
-  otherWiFi.disabled = true;
+  chrome.storage.local.get(['key'], function(result) {
+  	console.log(result.key);
+          if(result.key){
+          	if(result.key==0){
+          		homeWiFi.disabled = true;
+          		coolerWiFi.className = "available";
+          		otherWiFi.className = "available";
+          	}
+          	if(result.key==1){
+          		coolerWiFi.disabled = true;
+          		homeWiFi.className="available";
+          		otherWiFi.className = "available";
+          	}
+          	else{
+          		otherWiFi.disabled = true;
+          		coolerWiFi.className="available";
+          		homeWiFi.className="available";
+          	}
+          }
+          else{
+          	otherWiFi.disabled = true;
+          	coolerWiFi.className="available";
+          	homeWiFi.className="available";
+          }
+        });
   setTimer.disabled = true;
 
 function httpGetAsync(theUrl,callback)
@@ -30,6 +55,7 @@ function httpGetAsync(theUrl,callback)
 function whatsup(){
 httpGetAsync(server.concat('/status'),function(e){
   var ison = parseInt(e.split(' ')[1])==1?true:false;
+  timlef = parseInt(e.split(' ')[0])>0?true:false;
   if(ison){
     switchOnButton.disabled = true;
     switchOnButton.className = "";
@@ -41,6 +67,11 @@ httpGetAsync(server.concat('/status'),function(e){
     switchOnButton.className = "available";
     switchOffButton.disabled = true;
     switchOffButton.className = "";
+  }
+  if(timlef){
+  	setTimer.innerHTML = "Cancel Timer";
+  	setTimer.disabled = false;
+  	setTimer.className = "available";
   }
 });
 }
@@ -85,6 +116,9 @@ httpGetAsync(onlineserver,function(e){
       coolerWiFi.className = "available";
       otherWiFi.disabled = false;
       otherWiFi.className = "available";
+      chrome.storage.local.set({key: 0}, function() {
+          console.log('Value is set to 0');
+        });
       whatsup();
     });
   coolerWiFi.addEventListener('click', function() {
@@ -97,6 +131,9 @@ httpGetAsync(onlineserver,function(e){
       coolerWiFi.className = "";
       otherWiFi.disabled = false;
       otherWiFi.className = "available";
+      chrome.storage.local.set({key: 1}, function() {
+          console.log('Value is set to 1');
+        });
       whatsup();
     });
   otherWiFi.addEventListener('click', function() {
@@ -117,44 +154,37 @@ httpGetAsync('http://192.168.43.246/status',function(e){
       homeWiFi.className = "available";
       coolerWiFi.disabled = false;
       coolerWiFi.className = "available";
+      chrome.storage.local.set({key: 2}, function() {
+          console.log('Value is set to 2');
+        });
       whatsup();
     });
-
-  hours.addEventListener('keyup',function(){
-    if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0'))
+function handleKeyUp(elem){
+  	elem.value=elem.value.replace(/\D/g,'');
+	if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0'))
   		{
-        setTimer.disabled=true;
+        if(timlef){
+      		setTimer.innerHTML = "Cancel Timer";
+      	}
+      	else{
+      setTimer.disabled=true;
       setTimer.className = "";
+  }
     }
     else{
         setTimer.disabled=false;
       setTimer.className = "available";
+      setTimer.innerHTML="Set Timer";
     }
-  });
-  minutes.addEventListener('keyup',function(){
-if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0'))
-      {
-        setTimer.disabled=true;
-      setTimer.className = "";
-    }
-    else{
-        
-      setTimer.disabled=false;
-      setTimer.className = "available";
-    }
-  });
-  seconds.addEventListener('keyup',function(){
-  		if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0'))
-      {
-         setTimer.disabled=true;
-      setTimer.className = "";
-    }
-    else{
-       
-      setTimer.disabled=false;
-      setTimer.className = "available";
-    }
-  });
+}
+
+  hours.addEventListener('keyup',function(e){handleKeyUp(this)});
+  minutes.addEventListener('keyup',function(e){handleKeyUp(this)});
+  seconds.addEventListener('keyup',function(e){handleKeyUp(this)});
+
+  hours.addEventListener('mouseup',function(e){handleKeyUp(this)});
+  minutes.addEventListener('mouseup',function(e){handleKeyUp(this)});
+  seconds.addEventListener('mouseup',function(e){handleKeyUp(this)});
   setTimer.addEventListener('click',function(){
   	if(setTimer.innerHTML!="Cancel Timer"){
   	if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0')){
@@ -177,8 +207,6 @@ if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&
   		}
   		var value_to_send = hours.value*3600 + minutes.value*60 +seconds.value;
       httpGetAsync(server.concat('/setTimer?secs=',value_to_send),function(){});
-      //setTimer.className = "";
-    	//setTimer.disabled = true;
     	setTimer.innerHTML = "Cancel Timer";
     	hrs_phrase='';
     	min_phrase='';
@@ -229,6 +257,5 @@ if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&
 		setTimer.disabled = true;
 		setTimer.className = "";
 	}
-  	});
-
+  	}); 
   }

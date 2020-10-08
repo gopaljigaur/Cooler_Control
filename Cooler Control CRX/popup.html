@@ -9,7 +9,9 @@
 	font-family: "Product-Sans";
 	src: url("ProductSans-Regular.ttf");
 }
-
+*{
+	font-family: "Product-Sans";
+}
 @keyframes slideIn {
   from {
     top: -100%
@@ -140,8 +142,8 @@
       <hr>
       <h3 style="color: white;">Select WiFi network</h3>
       <div id="buttons">
-        <button id="home" class="available" style="margin-right: 10px;margin-bottom: 13px;" title="Switch to Home WiFi">Home WIFI</button>
-        <button id="cooler" class="available" style="margin-right: 10px;" title="Switch to Cooler WiFi">Cooler WIFI</button>
+        <button id="home" style="margin-right: 10px;margin-bottom: 13px;" title="Switch to Home WiFi">Home WIFI</button>
+        <button id="cooler" style="margin-right: 10px;" title="Switch to Cooler WiFi">Cooler WIFI</button>
         <button id="other" title="Switch to Other WiFi">Other WIFI</button>
       </div>
       
@@ -155,13 +157,13 @@
       <hr>
       <h3 style="color: white;">Switch it On/Off later</h3>
       	<div style="float: left;">
-      		<input type="number" autocomplete="anyrandomstring" id ="hours" name="hours" placeholder="HH" style="border-radius: 2px;height: 30px;width: 80px;margin-left: 12px;margin-right: 12px;border: none;font-size: 18px;text-align: center;background-color: gray;">
+      		<input type="number" autocomplete="anyrandomstring" id ="hours" name="hours" placeholder="HH" min="0" style="border-radius: 2px;height: 30px;width: 80px;margin-left: 12px;margin-right: 12px;border: none;font-size: 18px;text-align: center;background-color: gray;">
       	</div>
       	<div style="float: left;">
-      		<input type="number" autocomplete="anyrandomstring" id ="minutes" name="minutes" placeholder="MM" style="border-radius: 2px;height: 30px;width: 80px;margin-right: 12px;border: none;font-size: 18px;text-align: center;background-color: gray;">
+      		<input type="number" autocomplete="anyrandomstring" id ="minutes" name="minutes" placeholder="MM" min="0" style="border-radius: 2px;height: 30px;width: 80px;margin-right: 12px;border: none;font-size: 18px;text-align: center;background-color: gray;">
       	</div>
       	<div style="float: left;">
-            <input type="number" autocomplete="anyrandomstring" id ="seconds" name="seconds" placeholder="SS" style="border-radius: 2px;height: 30px;width: 80px;border: none;font-size: 18px;text-align: center;background-color: gray;">
+            <input type="number" autocomplete="anyrandomstring" id ="seconds" name="seconds" placeholder="SS" min="0" style="border-radius: 2px;height: 30px;width: 80px;border: none;font-size: 18px;text-align: center;background-color: gray;">
         </div>
       <button id="setTimer" style="margin-top: 25px;margin-bottom: 13px;">Set Timer</button>
 	</div>
