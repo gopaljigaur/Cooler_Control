@@ -134,13 +134,13 @@
   <body style="background-color: #303030;">
     <div id="popup">
     	<div id="heading">
-      <h1 style="color: white;">Cooler Control</h1>
+      <h1 style="color: white;cursor: default;">Cooler Control</h1>
       
        </div>
        <div id="main">
        	
       <hr>
-      <h3 style="color: white;">Select WiFi network</h3>
+      <h3 style="color: white;cursor: default;">Select WiFi network</h3>
       <div id="buttons">
         <button id="home" style="margin-right: 10px;margin-bottom: 13px;" title="Switch to Home WiFi">Home WIFI</button>
         <button id="cooler" style="margin-right: 10px;" title="Switch to Cooler WiFi">Cooler WIFI</button>
@@ -148,14 +148,14 @@
       </div>
       
       <hr>
-      <h3 style="color: white;">Switch</h3>
+      <h3 style="color: white; cursor: default;">Switch</h3>
       <div id="buttons">
         <button id="switchOn" class = "available" style="margin-right: 20px;margin-bottom: 13px;">ON</button>
         <button id="switchOff" class="available">OFF</button>
       </div>
       
       <hr>
-      <h3 style="color: white;">Switch it On/Off later</h3>
+      <h3 style="color: white; cursor: default;">Switch it On/Off later</h3>
       	<div style="float: left;">
       		<input type="number" autocomplete="anyrandomstring" id ="hours" name="hours" placeholder="HH" min="0" style="border-radius: 2px;height: 30px;width: 80px;margin-left: 12px;margin-right: 12px;border: none;font-size: 18px;text-align: center;background-color: gray;">
       	</div>
@@ -167,9 +167,8 @@
         </div>
       <button id="setTimer" style="margin-top: 25px;margin-bottom: 13px;">Set Timer</button>
 	</div>
-  <div id="lastseen" style="display:none">
+  <div id="lastseen" style="display:none;cursor: default;">
   </div>
   </body>
-  <script src="popup.js">
-  </script>
+  <script src="popup.js"></script>
 </html>
