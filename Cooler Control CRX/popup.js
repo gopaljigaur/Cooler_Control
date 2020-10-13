@@ -159,16 +159,17 @@ httpGetAsync('http://192.168.43.246/status',function(e){
         });
       whatsup();
     });
-function handleKeyUp(elem){
-  	elem.value=elem.value.replace(/\D/g,'');
+function handleKeyUp(){
 	if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0'))
   		{
         if(timlef){
       		setTimer.innerHTML = "Cancel Timer";
+      setTimer.className = "available";
       	}
       	else{
       setTimer.disabled=true;
       setTimer.className = "";
+      setTimer.innerHTML="Set Timer";
   }
     }
     else{
@@ -178,13 +179,14 @@ function handleKeyUp(elem){
     }
 }
 
-  hours.addEventListener('keyup',function(e){handleKeyUp(this)});
-  minutes.addEventListener('keyup',function(e){handleKeyUp(this)});
-  seconds.addEventListener('keyup',function(e){handleKeyUp(this)});
+  hours.addEventListener('keyup', function(){handleKeyUp()});
+  minutes.addEventListener('keyup',function(){handleKeyUp()});
+  seconds.addEventListener('keyup',function(){handleKeyUp()});
 
-  hours.addEventListener('mouseup',function(e){handleKeyUp(this)});
-  minutes.addEventListener('mouseup',function(e){handleKeyUp(this)});
-  seconds.addEventListener('mouseup',function(e){handleKeyUp(this)});
+  hours.addEventListener('mouseup',function(){handleKeyUp()});
+  minutes.addEventListener('mouseup',function(){handleKeyUp()});
+  seconds.addEventListener('mouseup',function(){handleKeyUp()});
+
   setTimer.addEventListener('click',function(){
   	if(setTimer.innerHTML!="Cancel Timer"){
   	if((hours.value==''||hours.value=='0')&&(minutes.value==''||minutes.value=='0')&&(seconds.value==''||seconds.value=='0')){
@@ -205,7 +207,7 @@ function handleKeyUp(elem){
   			seconds.value='0';
   			c=c-1;
   		}
-  		var value_to_send = hours.value*3600 + minutes.value*60 +seconds.value;
+  		var value_to_send = (parseInt(hours.value)*3600 + parseInt(minutes.value)*60 +parseInt(seconds.value)).toString();
       httpGetAsync(server.concat('/setTimer?secs=',value_to_send),function(){});
     	setTimer.innerHTML = "Cancel Timer";
     	hrs_phrase='';
