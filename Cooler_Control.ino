@@ -13,12 +13,12 @@
 #define leed 2
 
 //Increment this version number and version number in file before publishing any changes
-int ver = 0;
+int ver = 1;
 
 int stat = 1;
 int no_need = 0;
 int interval = 180;
-int ini = 1;
+int ini = 0;
 long rcv;
 unsigned long time_elapsed = 0;
 unsigned long last_print = 0;
@@ -29,7 +29,7 @@ const String ssid_loc = "Cooler server";
 const String pass_loc = "Ljgad#94912";
 const char * host = "https://gopalji.ml/.netlify/functions/alternate";
 const char * update_check_url = "https://raw.githubusercontent.com/gopaljigaur/Cooler_Control/master/version";
-const char * update_url = "https://github.com/gopaljigaur/Cooler_Control/raw/master/releases/Cooler_Control.bin";
+const char * update_url = "https://raw.githubusercontent.com/gopaljigaur/Cooler_Control/master/releases/Cooler_Control.bin";
 
 ESP8266WebServer server(80);
 ESP8266HTTPUpdateServer httpUpdater;
@@ -104,29 +104,39 @@ void loop() {
   time_elapsed = millis();
   if(wifiMulti.run()==WL_CONNECTED){
     if(ini==0){
+      Serial.print(">> Connected to : ");
+      Serial.println(WiFi.SSID());
+      Serial.print(">> IP Address : ");
+      Serial.println(WiFi.localIP());
       //check update
       int new_ver = 0;
       std::unique_ptr<WiFiClientSecure>client(new WiFiClientSecure);
       client -> setInsecure();
       HTTPClient https;
       String payload = WiFi.SSID();
-      if (https.begin( *client, update_url)) {
-        Serial.println("Checking for new updates");
+      if (https.begin( *client, update_check_url)) {
+        Serial.println("\nChecking for new updates");
         int httpCode = https.GET();
         if (httpCode > 0) {
-          Serial.println("Request Succeeded");
           new_ver = https.getString().toInt();
+          Serial.println("Request Succeeded\n");
+          Serial.print("Current Version : ");
+          Serial.println(ver);
         } else {
-          Serial.println("Request Failed");
+          Serial.println("Update Request Failed");
         }
         https.end();
       } else {
-        Serial.println("Unable to check for update");
+        Serial.println("Unable to check for updates");
       }
       
       //if version new then update
       if(new_ver>ver){
-      t_httpUpdate_return ret = ESPhttpUpdate.update(update_url); //Location of your binary file
+          Serial.print("New Version : ");
+          Serial.println(new_ver);
+          Serial.println();
+        Serial.println("Downloading new update. (Module will restart automatically)");
+      t_httpUpdate_return ret = ESPhttpUpdate.update(*client,update_url); //Location of your binary file
       
       /*upload information only */
       switch (ret) {
@@ -140,6 +150,9 @@ void loop() {
       Serial.println("HTTP_UPDATE_OK");
       break;
     }
+      }
+      else{
+        Serial.println("No new updates");
       }
       ini=1;
       }
@@ -183,7 +196,7 @@ void sendtoserver(){
       String payload = WiFi.SSID();
       if (https.begin( *client, host)) {
         https.addHeader("Content-Type", "text/plain");
-        Serial.println("Connecting to gopalji.ml");
+        Serial.println("\nConnecting to gopalji.ml");
         int httpCode = https.POST(payload);
         if (httpCode > 0) {
           Serial.println("Request Succeeded");
