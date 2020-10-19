@@ -12,6 +12,7 @@
 #define leed 2
 int stat = 1;
 int no_need = 0;
+int interval = 180;
 long rcv;
 unsigned long time_elapsed = 0;
 unsigned long last_print = 0;
@@ -114,7 +115,7 @@ void loop() {
     Serial.println();
     last_print = long(time_elapsed / 1000);
   }
-  if (long(time_elapsed / 1000) % 120 == 0 && (long(time_elapsed / 1000) - last_print2) > 1) {
+  if (long(time_elapsed / 1000) % interval == 0 && (long(time_elapsed / 1000) - last_print2) > 1) {
     if (wifiMulti.run() == WL_CONNECTED) {
       sendtoserver();
             //blink
