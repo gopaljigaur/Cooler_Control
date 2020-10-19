@@ -1,174 +1,43 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Cooler Controller</title>
-    <iframe id="iframe" sandbox="allow-same-origin" style="display: none"></iframe>
-    
-    <style>
-    	@font-face {
-	font-family: "Product-Sans";
-	src: url("ProductSans-Regular.ttf");
-}
-*{
-	font-family: "Product-Sans";
-}
-@keyframes slideIn {
-  from {
-    top: -100%
-  }
-  to {
-    top: 0%
-  }
-}
-    #popup{
-      width:300px;
-      text-align:center;
-    }
-    #buttons{
-      padding: 1px;
-      padding-bottom: 2px;
-      text-align: center;
-
-    }
-    #main{
-    	float: center;
-    }
-    #cooler, #home, #other{
-    	background-color: rgb(70,70,70);
-    	color: rgb(30,30,30);
-    	height: 40px;
-    	border-radius: 2px;
-    	border: none;
-    	width: 25%;
-    }
-    #setTimer{
-    	background-color: rgb(70,70,70);
-    	color: rgb(30,30,30);
-    	height: 30px;
-    	border-radius: 2px;
-    	border: none;
-    	width: 95px;
-    	transition: color, background-color ease-in 0.2s;
-    }
-    #cooler.available, #home.available, #other.available{
-    	background-color: gray;
-    	border: none;
-    	color: black;
-    	transition: color, background-color ease-in 0.2s;
-    	cursor: pointer;
-    }
-    #setTimer.available{
-    	background-color: gray;
-    	border: none;
-    	height: 30px;
-    	border-radius: 2px;
-    	color: black;
-    	transition: color, background-color ease-in 0.2s;
-    	width: 95px;
-
-    	cursor: pointer;
-    }
-    #cooler.available:hover , #home.available:hover{
-    	background-color: rgb(100,100,100);
-    	color: white;
-    }
-    #setTimer.available:hover{
-    	background-color: rgb(100,100,100);
-    	color: white;
-    }
-    #switchOn, #switchOff{
-    	background-color: rgb(70,70,70);
-    	color: rgb(30,30,30);
-    	height: 30px;
-    	border-radius: 2px;
-    	border: none;
-    	width: 50px;
-    }
-    #switchOn.available, #switchOff.available{
-    	background-color: gray;
-    	border: none;
-    	height: 30px;
-    	border-radius: 2px;
-    	color: black;
-    	width: 50px;
-    	transition: color, background-color ease-in 0.2s;
-    	cursor: pointer;
-    }
-
-    #switchOn.available:hover{
-    	background-color: rgb(100,200,150);
-    	color: white;
-    }
-    #switchOff.available:hover{
-    	background-color: rgb(200,100,100);
-    	color: white;
-    }
-    #lastseen{
-      color: #c9c9c9;
-    background-color: rgb(60,60,60);
-    padding: 7px;
-    border-radius: 5px;
-    cursor: default;
-    margin: 9px;
-    }
-    hr{
-    	width: 250px;
-    	height: 4px;
-    	border-radius: 20px;
-    	background-color: rgb(80,80,80);
-    	border: none;
-    	outline: none;
-    	margin-top: 10px;
-    	margin-bottom: 10px;
-    }
-    ::placeholder {
-  color: rgb(30,30,30);
-  padding-left: 14px;
-  opacity: 1;
-	}
-	input:focus::-webkit-input-placeholder {
-	opacity: 0;
-	}
-  </style>
-  </head>
-  <body style="background-color: #303030;">
-    <div id="popup">
-    	<div id="heading">
-      <h1 style="color: white;cursor: default;">Cooler Control</h1>
-      
-       </div>
-       <div id="main">
-       	
-      <hr>
-      <h3 style="color: white;cursor: default;">Select WiFi network</h3>
-      <div id="buttons">
-        <button id="home" style="margin-right: 10px;margin-bottom: 13px;" title="Switch to Home WiFi">Home WIFI</button>
-        <button id="cooler" style="margin-right: 10px;" title="Switch to Cooler WiFi">Cooler WIFI</button>
-        <button id="other" title="Switch to Other WiFi">Other WIFI</button>
+   <head>
+      <title>Cooler Controller</title>
+      <link rel="stylesheet" href="css/style.min.css">
+   </head>
+   <body>
+      <div id="popup">
+      <div id="heading">
+         <h1>Cooler Control</h1>
       </div>
-      
-      <hr>
-      <h3 style="color: white; cursor: default;">Switch</h3>
-      <div id="buttons">
-        <button id="switchOn" class = "available" style="margin-right: 20px;margin-bottom: 13px;">ON</button>
-        <button id="switchOff" class="available">OFF</button>
+      <div id="main">
+         <hr>
+         <h3>Select WiFi network</h3>
+         <div id="buttons">
+            <button id="home" title="Switch to Home WiFi">Home WIFI</button>
+            <button id="cooler" title="Switch to Cooler WiFi">Cooler WIFI</button>
+            <button id="other" title="Switch to Other WiFi">Other WIFI</button>
+         </div>
+         <hr>
+         <h3>Switch</h3>
+         <div id="buttons">
+            <button id="switchOn" class = "available">ON</button>
+            <button id="switchOff" class="available">OFF</button>
+         </div>
+         <hr>
+         <h3>Switch it On/Off later</h3>
+         <div id="inps">
+            <input type="number" autocomplete="anyrandomstring" id ="hours" name="hours" placeholder="HH" min="0">
+         </div>
+         <div id="inps">
+            <input type="number" autocomplete="anyrandomstring" id ="minutes" name="minutes" placeholder="MM" min="0">
+         </div>
+         <div id="inps">
+            <input type="number" autocomplete="anyrandomstring" id ="seconds" name="seconds" placeholder="SS" min="0">
+         </div>
+         <button id="setTimer">Set Timer</button>
       </div>
-      
-      <hr>
-      <h3 style="color: white; cursor: default;">Switch it On/Off later</h3>
-      	<div style="float: left;">
-      		<input type="number" autocomplete="anyrandomstring" id ="hours" name="hours" placeholder="HH" min="0" style="border-radius: 2px;height: 30px;width: 80px;margin-left: 12px;margin-right: 12px;border: none;font-size: 18px;text-align: center;background-color: gray;">
-      	</div>
-      	<div style="float: left;">
-      		<input type="number" autocomplete="anyrandomstring" id ="minutes" name="minutes" placeholder="MM" min="0" style="border-radius: 2px;height: 30px;width: 80px;margin-right: 12px;border: none;font-size: 18px;text-align: center;background-color: gray;">
-      	</div>
-      	<div style="float: left;">
-            <input type="number" autocomplete="anyrandomstring" id ="seconds" name="seconds" placeholder="SS" min="0" style="border-radius: 2px;height: 30px;width: 80px;border: none;font-size: 18px;text-align: center;background-color: gray;">
-        </div>
-      <button id="setTimer" style="margin-top: 25px;margin-bottom: 13px;">Set Timer</button>
-	</div>
-  <div id="lastseen" style="display:none;cursor: default;">
-  </div>
-  </body>
-  <script src="popup.js"></script>
+      <div id="lastseen">
+      </div>
+   </body>
+   <script src="js/popup.min.js"></script>
 </html>

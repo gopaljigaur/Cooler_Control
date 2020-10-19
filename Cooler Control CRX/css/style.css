@@ -1,0 +1,196 @@
+@font-face {
+      font-family: "Product-Sans";
+      src: url("../fonts/ProductSans-Regular.ttf");
+}
+
+* {
+      font-family: "Product-Sans";
+      user-select: none;
+}
+
+@keyframes slideIn {
+      from {
+            top: -100%
+      }
+      to {
+            top: 0%
+      }
+}
+
+#popup {
+      width: 300px;
+      text-align: center;
+}
+
+#buttons {
+      padding: 1px;
+      padding-bottom: 2px;
+      text-align: center;
+}
+
+#cooler,
+#home,
+#other {
+      background-color: rgb(70, 70, 70);
+      color: rgb(30, 30, 30);
+      height: 40px;
+      border-radius: 2px;
+      border: none;
+      width: 25%;
+}
+
+#setTimer {
+      background-color: rgb(70, 70, 70);
+      color: rgb(30, 30, 30);
+      height: 30px;
+      border-radius: 2px;
+      border: none;
+      width: 95px;
+      margin-top: 25px;
+      margin-bottom: 13px;
+      transition: color, background-color ease-in 0.2s;
+}
+
+#cooler.available,
+#home.available,
+#other.available {
+      background-color: gray;
+      border: none;
+      color: black;
+      transition: color, background-color ease-in 0.2s;
+      cursor: pointer;
+}
+
+#setTimer.available {
+      background-color: gray;
+      border: none;
+      height: 30px;
+      border-radius: 2px;
+      color: black;
+      transition: color, background-color ease-in 0.2s;
+      width: 95px;
+      cursor: pointer;
+}
+
+#cooler.available:hover,
+#home.available:hover,
+#other.available:hover {
+      background-color: rgb(100, 100, 100);
+      color: white;
+}
+
+#setTimer.available:hover {
+      background-color: rgb(100, 100, 100);
+      color: white;
+}
+
+#switchOn,
+#switchOff {
+      background-color: rgb(70, 70, 70);
+      color: rgb(30, 30, 30);
+      height: 30px;
+      border-radius: 2px;
+      border: none;
+      width: 50px;
+}
+
+#switchOn.available,
+#switchOff.available {
+      background-color: gray;
+      border: none;
+      height: 30px;
+      border-radius: 2px;
+      color: black;
+      width: 50px;
+      transition: color, background-color ease-in 0.2s;
+      cursor: pointer;
+}
+
+#switchOn.available:hover {
+      background-color: rgb(100, 200, 150);
+      color: white;
+}
+
+#switchOff.available:hover {
+      background-color: rgb(200, 100, 100);
+      color: white;
+}
+
+#lastseen {
+      color: #c9c9c9;
+      background-color: rgb(60, 60, 60);
+      padding: 7px;
+      border-radius: 5px;
+      cursor: default;
+      margin: 9px;
+      cursor: default;
+      display: none;
+}
+
+hr {
+      width: 250px;
+      height: 4px;
+      border-radius: 20px;
+      background-color: rgb(80, 80, 80);
+      border: none;
+      outline: none;
+      margin-top: 10px;
+      margin-bottom: 10px;
+}
+
+ ::placeholder {
+      color: rgb(30, 30, 30);
+      padding-left: 14px;
+      opacity: 1;
+}
+
+input {
+      border-radius: 2px;
+      height: 30px;
+      width: 80px;
+      border: none;
+      font-size: 18px;
+      text-align: center;
+      background-color: gray;
+}
+
+input:focus::-webkit-input-placeholder {
+      opacity: 0;
+}
+
+h1,
+h3 {
+      color: white;
+      cursor: default;
+}
+
+body {
+      background-color: #303030
+}
+
+#home {
+      margin-right: 10px;
+      margin-bottom: 13px
+}
+
+#cooler {
+      margin-right: 10px
+}
+
+#switchOn {
+      margin-right: 20px;
+      margin-bottom: 13px
+}
+
+#hours {
+      margin-left: 12px;
+      margin-right: 12px
+}
+
+#minutes {
+      margin-right: 12px
+}
+
+#inps {
+      float: left;
+}
