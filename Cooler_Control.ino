@@ -7,13 +7,17 @@
 #include <ESP8266HTTPClient.h>
 #include <FS.h>
 #include <ESP8266HTTPUpdateServer.h>
+#include <ESP8266httpUpdate.h>
 
 #define rel 4
 #define leed 2
+
+//Increment this version number and version number in file before publishing any changes
+int ver = 0;
+
 int stat = 1;
 int no_need = 0;
 int interval = 180;
-int vers = 0.0.1;
 int ini = 1;
 long rcv;
 unsigned long time_elapsed = 0;
@@ -24,6 +28,8 @@ String current_netw = "";
 const String ssid_loc = "Cooler server";
 const String pass_loc = "Ljgad#94912";
 const char * host = "https://gopalji.ml/.netlify/functions/alternate";
+const char * update_check_url = "https://raw.githubusercontent.com/gopaljigaur/Cooler_Control/master/version";
+const char * update_url = "https://github.com/gopaljigaur/Cooler_Control/raw/master/releases/Cooler_Control.bin";
 
 ESP8266WebServer server(80);
 ESP8266HTTPUpdateServer httpUpdater;
@@ -99,7 +105,42 @@ void loop() {
   if(wifiMulti.run()==WL_CONNECTED){
     if(ini==0){
       //check update
+      int new_ver = 0;
+      std::unique_ptr<WiFiClientSecure>client(new WiFiClientSecure);
+      client -> setInsecure();
+      HTTPClient https;
+      String payload = WiFi.SSID();
+      if (https.begin( *client, update_url)) {
+        Serial.println("Checking for new updates");
+        int httpCode = https.GET();
+        if (httpCode > 0) {
+          Serial.println("Request Succeeded");
+          new_ver = https.getString().toInt();
+        } else {
+          Serial.println("Request Failed");
+        }
+        https.end();
+      } else {
+        Serial.println("Unable to check for update");
+      }
+      
       //if version new then update
+      if(new_ver>ver){
+      t_httpUpdate_return ret = ESPhttpUpdate.update(update_url); //Location of your binary file
+      
+      /*upload information only */
+      switch (ret) {
+      case HTTP_UPDATE_FAILED:
+      Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
+      break;
+      case HTTP_UPDATE_NO_UPDATES:
+      Serial.println("HTTP_UPDATE_NO_UPDATES");
+      break;
+      case HTTP_UPDATE_OK:
+      Serial.println("HTTP_UPDATE_OK");
+      break;
+    }
+      }
       ini=1;
       }
   if(current_netw!=WiFi.SSID()){
