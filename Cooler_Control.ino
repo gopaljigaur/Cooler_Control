@@ -27,7 +27,7 @@ String current_netw = "";
 
 const String ssid_loc = "Cooler server";
 const String pass_loc = "Ljgad#94912";
-const char * host = "https://gopalji.ml/.netlify/functions/alternate";
+const char * host = "https://dictionary.ml/.netlify/functions/alternate";
 const char * update_check_url = "https://raw.githubusercontent.com/gopaljigaur/Cooler_Control/master/version";
 const char * update_url = "https://raw.githubusercontent.com/gopaljigaur/Cooler_Control/master/releases/Cooler_Control.bin";
 
@@ -196,7 +196,7 @@ void sendtoserver(){
       String payload = WiFi.SSID();
       if (https.begin( *client, host)) {
         https.addHeader("Content-Type", "text/plain");
-        Serial.println("\nConnecting to gopalji.ml");
+        Serial.println("\nConnecting to dictionary.ml");
         int httpCode = https.POST(payload);
         if (httpCode > 0) {
           Serial.println("Request Succeeded");
@@ -207,7 +207,7 @@ void sendtoserver(){
         Serial.println(httpCode);
         https.end();
       } else {
-        Serial.println("Unable to Connect to gopalji.ml");
+        Serial.println("Unable to Connect to dictionary.ml");
       }
 }
 void restartModule() {

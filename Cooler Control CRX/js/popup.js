@@ -11,7 +11,7 @@ window.onload = function () {
 	var lastseen = document.getElementById('lastseen');
 	var server = '';
 	var timlef = false;
-	var onlineserver = 'https://gopalji.ml/.netlify/functions/alternate';
+	var onlineserver = 'https://dictionary.ml/.netlify/functions/alternate';
 	chrome.storage.local.get(['key'], function (result) {
 		console.log(result.key);
 		if (result.key) {
