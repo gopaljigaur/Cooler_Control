@@ -13,7 +13,7 @@
 #define leed 2
 
 //Increment this version number and version number in file before publishing any changes
-int ver = 1;
+int ver = 2;
 
 int stat = 1;
 int no_need = 0;
